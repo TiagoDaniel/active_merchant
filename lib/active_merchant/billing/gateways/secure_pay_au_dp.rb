@@ -1,6 +1,8 @@
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     class SecurePayAuDpGateway < Gateway
+      require 'digest/sha1'
+
       self.test_url = 'https://api.securepay.com.au/test/directpost/authorise'
       self.live_url = 'https://api.securepay.com.au/live/directpost/authorise'
 
@@ -85,6 +87,16 @@ module ActiveMerchant #:nodoc:
         time = Time.now.utc
         time.strftime("%Y%d%m%H%M%S#{time.usec}+000")
       end
+
+      def generate_finger_print(parameters)
+        Digest::SHA1.hexdigest([parameters[:EPS_MERCHANT].to_s, 
+                                parameters[:T_PASSWORD].to_s,
+                                parameters[:EPS_TXNTYPE].to_s,
+                                parameters[:EPS_REFERENCEID].to_s,
+                                parameters[:EPS_AMOUNT].to_s,
+                                generate_timestamp()].join('|'))
+      end
+      
     end
   end
 end
