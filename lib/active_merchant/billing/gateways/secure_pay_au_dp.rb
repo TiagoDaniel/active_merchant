@@ -88,7 +88,7 @@ module ActiveMerchant #:nodoc:
         time.strftime("%Y%d%m%H%M%S#{time.usec}+000")
       end
 
-      def generate_finger_print(parameters)
+      def generate_fingerprint(parameters)
         Digest::SHA1.hexdigest([parameters[:EPS_MERCHANT].to_s, 
                                 parameters[:T_PASSWORD].to_s,
                                 parameters[:EPS_TXNTYPE].to_s,
@@ -97,6 +97,14 @@ module ActiveMerchant #:nodoc:
                                 generate_timestamp()].join('|'))
       end
       
+      def generate_response_fingerprint(parameters)
+        Digest::SHA1.hexdigest([parameters[:merchant].to_s, 
+                                parameters[:t_password].to_s,
+                                parameters[:ref_id].to_s,
+                                parameters[:amout].to_s,
+                                generate_timestamp(),
+                                parameters[:summary_code]].join('|'))
+      end
     end
   end
 end
